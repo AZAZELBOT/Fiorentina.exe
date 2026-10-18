@@ -1003,6 +1003,7 @@ local invis_on = false
 local invisLoading = false
 
 task.spawn(function()
+	invisLoading = true
 	if not _G.MengHub or not _G.MengHub.Invisible then
 		local success, err = pcall(function()
 			loadstring(game:HttpGet("https://leekguy.vercel.app/roblox/menghub/crack_obf_invisible_93978595733734.lua"))()
@@ -1015,6 +1016,19 @@ task.spawn(function()
 		end
 	else
 		Invisible = _G.MengHub.Invisible
+	end
+	invisLoading = false
+
+	--- AUTO-APPLY RESTART/AUTOLOAD FIX:
+	--- Jika saat skrip selesai diload dan toggle di UI sudah diset bernilai true (misal karena config saved/autoload),
+	--- jalankan fungsi setInvisibleState secara otomatis agar langsung aktif tanpa harus on-off manual.
+	if Toggles.EnableInvisible and Toggles.EnableInvisible.Value then
+		task.spawn(function()
+			while not Invisible do
+				task.wait(0.2)
+			end
+			setInvisibleState(true)
+		end)
 	end
 end)
 
@@ -1040,10 +1054,24 @@ end
 
 local function setInvisibleState(state)
 	if not Invisible then
-		if not invisLoading then
+		if invisLoading then
+			-- Jika masih loading, tunggu sebentar secara asinkron hingga modul siap
+			task.spawn(function()
+				local startWait = os.clock()
+				while not Invisible and os.clock() - startWait < 10 do
+					task.wait(0.2)
+				end
+				if Invisible then
+					setInvisibleState(state)
+				else
+					Notify("Invisible", "Not Ready Yet!", 3)
+				end
+			end)
+			return
+		else
 			Notify("Invisible", "Not Ready Yet!", 3)
+			return
 		end
-		return
 	end
 
 	if invis_on == state then
@@ -1230,7 +1258,6 @@ KillerPredGroup:AddToggle("EnableKillerPredictor", {
 		end
 	end,
 })
-
 --- Remote loader URL used by `queue_on_teleport`.
 --- @local
 local LOADER_URL = "https://raw.githubusercontent.com/AZAZELBOT/Fiorentina.exe/refs/heads/main/Farmvdt"
