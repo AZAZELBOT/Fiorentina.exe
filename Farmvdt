@@ -1233,7 +1233,7 @@ KillerPredGroup:AddToggle("EnableKillerPredictor", {
 
 --- Remote loader URL used by `queue_on_teleport`.
 --- @local
-local LOADER_URL = "https://raw.githubusercontent.com/AZAZELBOT/Fiorentina.exe/refs/heads/main/Farmvdt
+local LOADER_URL = "https://raw.githubusercontent.com/AZAZELBOT/Fiorentina.exe/refs/heads/main/Farmvdt"
 
 --- Indicates whether the current teleport already has
 --- an auto-execution payload queued.
